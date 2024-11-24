@@ -1,29 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent, MouseEvent } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { getPhotosBySearchValue } from '../services/unsplash-api';
+import { getPhotosBySearchValue } from '../../services/unsplash-api';
 
-import SearchBar from './SearchBar/SearchBar';
-import ImageGallery from './ImageGallery/ImageGallery';
-import Loader from './Loader/Loader';
-import EmptyResultMessage from './EmptyResultMessage/EmptyResultMessage';
-import ErrorMessage from './ErrorMessage/ErrorMessage';
-import LoadMoreButton from './LoadMoreBtn/LoadMoreBtn';
-import ImageModal from './ImageModal/ImageModal';
-
+import SearchBar from '../SearchBar/SearchBar';
+import ImageGallery from '../ImageGallery/ImageGallery';
+import Loader from '../Loader/Loader';
+import EmptyResultMessage from '../EmptyResultMessage/EmptyResultMessage';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import LoadMoreButton from '../LoadMoreBtn/LoadMoreBtn';
+import ImageModal from '../ImageModal/ImageModal';
+import { Image } from './App.types';
 import './App.module.css';
 
 const App = () => {
-  const [searchValue, setSearchValue] = useState(null);
-  const [images, setImages] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalImages, setTotalImages] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [modalData, setModalData] = useState(null);
+  const [searchValue, setSearchValue] = useState<string | null>(null);
+  const [images, setImages] = useState<Image[] | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalImages, setTotalImages] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<Image | null>(null);
 
-  const handleSearch = value => {
+  const handleSearch = (value: string) => {
     setSearchValue(value);
     setImages(null);
     setIsError(false);
@@ -47,13 +47,14 @@ const App = () => {
           currentPage
         );
 
-        currentPage === 1
-          ? setImages(results)
-          : setImages(prevState => [...prevState, ...results]);
+        if (currentPage === 1) setImages(results);
+
+        if (currentPage > 1 && images !== null)
+          setImages([...images, ...results]);
 
         setTotalImages(total);
       } catch (error) {
-        toast.error(error.message);
+        if (error instanceof Error) toast.error(error.message);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -77,13 +78,14 @@ const App = () => {
     if (currentPage > 1) scrollMore();
   }, [images, currentPage]);
 
-  const onShowModal = e => {
+  const onShowModal = (e: MouseEvent<HTMLImageElement>) => {
     setIsShowModal(true);
 
-    const filteredImage = images.filter(
-      ({ urls: { small } }) => e.target.src === small
+    const filteredImage = images?.filter(
+      ({ urls: { small } }) => (e.target as HTMLImageElement).src === small
     );
-    setModalData(filteredImage[0]);
+
+    if (filteredImage) setModalData(filteredImage[0]);
   };
 
   const onCloseModal = () => {

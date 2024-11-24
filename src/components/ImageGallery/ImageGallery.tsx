@@ -1,8 +1,15 @@
+import { FC, MouseEvent } from 'react';
 import ImageCard from '../ImageCard/ImageCard';
 
 import css from './ImageGallery.module.css';
+import { Image } from '../App/App.types';
 
-const ImageGallery = ({ images, onShowModal }) => {
+type Props = {
+  images: Image[] | null;
+  onShowModal: (e: MouseEvent<HTMLImageElement>) => void;
+};
+
+const ImageGallery: FC<Props> = ({ images, onShowModal }) => {
   return (
     <>
       {images && images.length !== 0 && (

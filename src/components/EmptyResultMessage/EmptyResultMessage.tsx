@@ -1,6 +1,7 @@
+import { FC } from 'react';
 import css from './EmptyResultMessage.module.css';
 
-const EmptyResultMessage = () => {
+const EmptyResultMessage: FC = () => {
   return (
     <div className={css.container}>
       <img

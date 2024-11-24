@@ -1,7 +1,9 @@
-import ReactModal from 'react-modal';
+import { FC } from 'react';
+import ReactModal, { Styles } from 'react-modal';
+import { Image } from '../App/App.types';
 import css from './ImageModal.module.css';
 
-const customStyles = {
+const customStyles: Styles = {
   overlay: {
     position: 'fixed',
     top: 0,
@@ -24,9 +26,15 @@ const customStyles = {
   },
 };
 
+type Props = {
+  isOpen: boolean;
+  closeModal: () => void;
+  modalData: Image;
+};
+
 ReactModal.setAppElement('#root');
 
-const ImageModal = ({ isOpen, closeModal, modalData }) => {
+const ImageModal: FC<Props> = ({ isOpen, closeModal, modalData }) => {
   const {
     urls: { regular },
     description,
